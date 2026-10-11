@@ -1,0 +1,14 @@
+/Users/soke/Desktop/GenesisRoguelike/bin/Debug/net9.0/GenesisRoguelike
+/Users/soke/Desktop/GenesisRoguelike/bin/Debug/net9.0/GenesisRoguelike.deps.json
+/Users/soke/Desktop/GenesisRoguelike/bin/Debug/net9.0/GenesisRoguelike.runtimeconfig.json
+/Users/soke/Desktop/GenesisRoguelike/bin/Debug/net9.0/GenesisRoguelike.dll
+/Users/soke/Desktop/GenesisRoguelike/bin/Debug/net9.0/GenesisRoguelike.pdb
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.GeneratedMSBuildEditorConfig.editorconfig
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.AssemblyInfoInputs.cache
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.AssemblyInfo.cs
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.csproj.CoreCompileInputs.cache
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.dll
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/refint/GenesisRoguelike.dll
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.pdb
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/GenesisRoguelike.genruntimeconfig.cache
+/Users/soke/Desktop/GenesisRoguelike/obj/Debug/net9.0/ref/GenesisRoguelike.dll
