@@ -57,39 +57,39 @@ class Program
 
     static void Genesis()
     {
-        int[] nextMap = (int[])map.Clone();
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                int index = ToIndex(x,y);
-                if (map[index] == 2)
-                {
-                    int r = random.Next(32);
-                    Point burnpos = r switch
-                    {
-                        0 => Point.up,
-                        1 => Point.left,
-                        2 => Point.down,
-                        3 => Point.right,
-                        _ => Point.zero
-                    };
+        // int[] nextMap = (int[])map.Clone();
+        // for (int x = 0; x < Width; x++)
+        // {
+        //     for (int y = 0; y < Height; y++)
+        //     {
+        //         int index = ToIndex(x,y);
+        //         if (map[index] == 2)
+        //         {
+        //             int r = random.Next(32);
+        //             Point burnpos = r switch
+        //             {
+        //                 0 => Point.up,
+        //                 1 => Point.left,
+        //                 2 => Point.down,
+        //                 3 => Point.right,
+        //                 _ => Point.zero
+        //             };
 
-                    Point targetPos = new Point(x, y) + burnpos;
+        //             Point targetPos = new Point(x, y) + burnpos;
 
-                    if (targetPos.X >= 0 && targetPos.X < Width && targetPos.Y >= 0 && targetPos.Y < Height)
-                    {
-                        int targetIndex = ToIndex(targetPos);
+        //             if (targetPos.X >= 0 && targetPos.X < Width && targetPos.Y >= 0 && targetPos.Y < Height)
+        //             {
+        //                 int targetIndex = ToIndex(targetPos);
 
-                        if (map[targetIndex] == 0)
-                        {
-                            nextMap[targetIndex] = 2;
-                        }
-                    }
-                }
-            }
-        }
-        map = nextMap;
+        //                 if (map[targetIndex] == 0)
+        //                 {
+        //                     nextMap[targetIndex] = 2;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // map = nextMap;
     }
 
 
