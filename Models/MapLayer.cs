@@ -1,3 +1,6 @@
+using System;
+using Microsoft.Xna.Framework;
+
 namespace Game;
 
 public class MapLayer<T>
