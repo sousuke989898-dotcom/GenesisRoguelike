@@ -1,4 +1,3 @@
-# Visual Studio / VS Code のキャッシュ・ビルド成果物
 [Bb]in/
 [Oo]bj/
 .vs/
@@ -7,7 +6,7 @@
 *.userosscache
 *.sln.docstates
 
-# MonoGame 固有の一時ファイルやビルドキャッシュ
 Content/bin/
 Content/obj/
+
 .DS_Store
