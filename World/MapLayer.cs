@@ -30,6 +30,12 @@ public class MapLayer<T>
 
     private int ToIndex(int x, int y) => x + (y * Width);
 
+    public Span<T> AsSpan() => _data.AsSpan();
+    public Span<T> AsSpan(int start, int length) => _data.AsSpan(start,length);
+    public Span<T> GetRowSpan(int y) => _data.AsSpan(y * Width, Width);
+
+    public void Fill(T value) => Array.Fill(_data, value);
+
     public MapLayer<T> Clone()
     {
         var clone = new MapLayer<T>(Width, Height);

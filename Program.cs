@@ -3,10 +3,11 @@
 class Program
 {
 
-    const int Width = 16;
-    const int Height = 16;
+    const int Width = 32;
+    const int Height = 32;
 
-    static int[] map = new int[Width * Height];
+
+    static WorldMap worldMap = new (Width, Height);
 
     static Point PlayerPos = new(1,1);
 
@@ -14,14 +15,11 @@ class Program
 
     static void Main(string[] args)
     {
-        Array.Fill(map,1);
-        for (int y = 1; y < Height-1; y++)
-        {
-            map.AsSpan(y * Width + 1, Width -2).Clear();
-        }
-
         Console.CursorVisible = false;
-        RenderMap();
+        Console.Clear();
+        RenderMap(worldMap);
+
+
 
         while (true)
         {
@@ -29,101 +27,59 @@ class Program
 
             Point movement = keyInfo.Key switch
             {
-                ConsoleKey.W => Point.up,
-                ConsoleKey.A => Point.left,
-                ConsoleKey.S => Point.down,
-                ConsoleKey.D => Point.right,
+                ConsoleKey.UpArrow => Point.up,
+                ConsoleKey.LeftArrow => Point.left,
+                ConsoleKey.DownArrow => Point.down,
+                ConsoleKey.RightArrow => Point.right,
                 _ => Point.zero
             };
 
-            switch (keyInfo.Key)
-            {
-                case ConsoleKey.Spacebar:
-                {
-                    int idx = PlayerPos.ToIndex(Width);
-                    map[idx] = 2; // 炎・溶岩
-                }break;
-            }
+            // switch (keyInfo.Key)
+            // {
+            //     case ConsoleKey.Spacebar:
+            //     {
+            //         int idx = PlayerPos.ToIndex(Width);
+            //         map[idx] = 2; // 炎・溶岩
+            //     }break;
+            // }
 
             var newPos = PlayerPos + movement;
-            if (CanMove(newPos)) PlayerPos = newPos;
+            if (worldMap.CanMove(newPos)) PlayerPos = newPos;
 
-            RenderMap();
-
-            Genesis();  
+            RenderMap(worldMap);
 
         }
     }
 
-    static void Genesis()
+    static void Genesis(){} //TODO イベントとして火山の噴火・地震・津波などを用意する
+
+
+
+    static void RenderMap(WorldMap worldMap)
     {
-        // int[] nextMap = (int[])map.Clone();
-        // for (int x = 0; x < Width; x++)
-        // {
-        //     for (int y = 0; y < Height; y++)
-        //     {
-        //         int index = ToIndex(x,y);
-        //         if (map[index] == 2)
-        //         {
-        //             int r = random.Next(32);
-        //             Point burnpos = r switch
-        //             {
-        //                 0 => Point.up,
-        //                 1 => Point.left,
-        //                 2 => Point.down,
-        //                 3 => Point.right,
-        //                 _ => Point.zero
-        //             };
-
-        //             Point targetPos = new Point(x, y) + burnpos;
-
-        //             if (targetPos.X >= 0 && targetPos.X < Width && targetPos.Y >= 0 && targetPos.Y < Height)
-        //             {
-        //                 int targetIndex = ToIndex(targetPos);
-
-        //                 if (map[targetIndex] == 0)
-        //                 {
-        //                     nextMap[targetIndex] = 2;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // map = nextMap;
-    }
-
-
-
-    static void RenderMap()
-    {
-        Console.Clear();
+        Console.SetCursorPosition(0, 0);
 
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
             {
-                int val = map[ToIndex(x, y)];
-                string display = val switch
-                {
-                    0 => " .",// 床
-                    1 => " ■",// 壁
-                    2 => "炎",// 溶岩・イベント用
-                    _ => " ？",
-                };
+                var height = worldMap.HeightMap[x,y];
+                Console.BackgroundColor = MapRenderer.GetHeightColor(height);
+
+                var terrainType = worldMap.TerrainMap[x,y];
+                string display = MapRenderer.GetTextToDisplay(terrainType);
+
                 Console.Write(display);
             }
             Console.WriteLine();
         }
 
+
+        Console.BackgroundColor = ConsoleColor.Green;
         Console.SetCursorPosition(PlayerPos.X * 2,PlayerPos.Y);
         Console.Write(" @");
+
+        Console.ResetColor();
     }
 
-
-
-
-    public static int ToIndex(int x, int y) => x + (y * Width);
-    public static int ToIndex(Point point) => point.ToIndex(Width);
-    public static Point ToPoint(int index) => new(index % Width, index/Width);
-    public static bool CanMove(Point p) => map[p.ToIndex(Width)] != 1;
 }
