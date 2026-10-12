@@ -29,60 +29,27 @@ public class WorldMap
         Random rand = new();
 
         GenerateHeightMap(rand);
-
-        SmoothingHeight();
     }
 
     private void GenerateHeightMap(Random rand)
     {
-        for (int y = 0; y < Height; y++)
-        {
-            for (int x = 0; x < Width; x++)
-            {
-                HeightMap[x, y] = (byte)rand.Next(0, 200);
-            }
-        }
-    }
+        FastNoiseLite noise = new();
 
-
-
-    private void SmoothingHeight()
-    {
-        MapLayer<byte> tmp = new(Width,Height);
+        noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2); // 滑らかなノイズ
+        noise.SetFractalType(FastNoiseLite.FractalType.FBm);      // 波の重ね合わせ
+        noise.SetFractalOctaves(3);                               // 重ね合わせる回数（多いほど細かい起伏が増える）
+        noise.SetFrequency(0.02f);                                // 波の大きさ（数値を小さくすると広大な大陸、大きくすると細かい島々になる）
 
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
             {
-                tmp[x,y] = GetHeightAverage(new(x,y));
+                float noiseValue = noise.GetNoise(x, y); //ノイズ値を取得
+                float normalized = (noiseValue + 1f) / 2f; //0.0 ~ 1.0に正規化
+                HeightMap[x, y] = (byte)(normalized * 255); // 0 ~ 255のbyteに変換
             }
         }
-
-        HeightMap = tmp;
     }
-
-
-    private byte GetHeightAverage(Point center) //周囲3*3マスの平均を返す
-    {
-        int sum = 0;
-        int count = 0;
-
-        for (int x = center.X-1; x <= center.X +1; x++)
-        {
-            for (int y = center.Y-1; y <= center.Y +1; y++)
-            {
-                if (HeightMap.IsInBounds(x, y))
-                {
-                    sum += HeightMap[x,y];
-                    count ++;
-                }
-            }
-        }
-
-        return (byte)(sum/count);
-    }
-
-
 
     public bool CanMove(Point nextPoint)
     {

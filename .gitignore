@@ -10,3 +10,4 @@
 # MonoGame 固有の一時ファイルやビルドキャッシュ
 Content/bin/
 Content/obj/
+.DS_Store
