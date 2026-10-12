@@ -11,8 +11,12 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     private Texture2D _pixel;
 
+    private Texture2D _playerTexture;
+
     private WorldMap _worldMap;
     private const int TileSize = 16;
+
+    private Point PlayerPos = new(1,1);
 
 
     public Game1()
@@ -40,12 +44,21 @@ public class Game1 : Microsoft.Xna.Framework.Game
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData([Color.White]);
 
+        _playerTexture = Content.Load<Texture2D>("Player");
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        KeyboardState keyboardState = Keyboard.GetState();
+
+        if (keyboardState.IsKeyDown(Keys.W)) PlayerPos += new Point(0,-1);
+        else if (keyboardState.IsKeyDown(Keys.A)) PlayerPos += new Point(-1,0);
+        else if (keyboardState.IsKeyDown(Keys.S)) PlayerPos += new Point(0,1);
+        else if (keyboardState.IsKeyDown(Keys.D)) PlayerPos += new Point(1,0);
+
 
 
         base.Update(gameTime);
@@ -77,6 +90,8 @@ public class Game1 : Microsoft.Xna.Framework.Game
                 _spriteBatch.Draw(_pixel, position, null, tileColor, 0f, Vector2.Zero, TileSize, SpriteEffects.None, 0f);
             }
         }
+
+        _spriteBatch.Draw(_playerTexture,new Vector2(PlayerPos.X * TileSize, PlayerPos.Y * TileSize), Color.White);
 
         _spriteBatch.End();
 
