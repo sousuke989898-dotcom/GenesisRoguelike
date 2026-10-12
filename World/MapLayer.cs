@@ -28,7 +28,7 @@ public class MapLayer<T>
     public bool IsInBounds(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
     public bool IsInBounds(Point p) => IsInBounds(p.X, p.Y);
 
-    private int ToIndex(int x, int y) => x + (y * Width);
+    private int ToIndex(int x, int y) => IsInBounds(x,y)? x + (y * Width) : 0;
 
     public Span<T> AsSpan() => _data.AsSpan();
     public Span<T> AsSpan(int start, int length) => _data.AsSpan(start,length);
