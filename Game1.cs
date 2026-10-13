@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -79,13 +80,23 @@ public class Game1 : Microsoft.Xna.Framework.Game
             else if (keyboardState.IsKeyDown(Keys.S)) moveDir = new Point(0, 1);
             else if (keyboardState.IsKeyDown(Keys.D)) moveDir = new Point(1, 0);
 
+            if (keyboardState.IsKeyDown(Keys.Space))//試運転用
+            {
+                _moveTimer = -1f;
+            }
+
             if (moveDir != Point.Zero)
             {
                 Point nextPos = PlayerPos + moveDir;
-                if (_worldMap.CanMove(nextPos)) PlayerPos = nextPos;
+                if (_worldMap.CanMove(nextPos))
+                {
+                    _worldMap.RunWater();
+                    PlayerPos = nextPos;
+                }
                 _moveTimer = 0f;
             }
         }
+
 
         Vector2 playerPixelPos = new(PlayerPos.X * TileSize + TileSize / 2f, PlayerPos.Y * TileSize + TileSize / 2f);
         _camera.Update(playerPixelPos);
@@ -109,8 +120,9 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
                 Color tileColor = height switch
                 {
-                    < 50  => new Color( 30,  60, 100), // 深海 (青)
-                    < 100 => new Color( 30, 100, 200), // 海（青）
+
+                    < 50  => new Color( 60,  60,  60), // 深海(黒)
+                    < 90  => new Color(100, 100, 100), // 海(灰色)
                     < 110 => new Color(220, 210, 140), // 砂浜・浅瀬（黄土色）
                     < 150 => new Color( 60, 160,  60), // 平地・草原（緑）
                     < 200 => new Color(130, 130, 130), // 山（灰色）
@@ -119,6 +131,29 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
                 Vector2 position = new(x * TileSize, y * TileSize);
                 _spriteBatch.Draw(_pixel, position, null, tileColor, 0f, Vector2.Zero, TileSize, SpriteEffects.None, 0f);
+            }
+        }
+
+        for (int y = 0; y < _worldMap.Height; y++)
+        {
+            for (int x = 0; x < _worldMap.Width; x++)
+            {
+                if (_worldMap.WaterMap[x, y] != 0)
+                {
+                    float waterVal = _worldMap.WaterMap[x, y];
+                    if (waterVal <= 0.001f) continue;
+                    float alpha = MathF.Min(waterVal / 2.0f, 1.0f);
+                    Color waterColor = new Color(0, 120, 255) * alpha;
+                    Rectangle destRect = new Rectangle(x * TileSize, y * TileSize, TileSize, TileSize);
+                    _spriteBatch.Draw(_pixel, destRect, waterColor);
+
+
+                    if (_worldMap.WaterSourceMap[x, y])
+                    {
+                        _spriteBatch.Draw(_playerTexture, new Vector2(x * TileSize,y * TileSize), Color.Red);
+
+                    }
+                }
             }
         }
 
