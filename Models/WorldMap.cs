@@ -54,6 +54,7 @@ public class WorldMap
     public bool CanMove(Point nextPoint)
     {
         if (!TerrainMap.IsInBounds(nextPoint)) return false;
-        return TerrainMap[nextPoint] != 1;
-    }//高低差で移動不可とする可能性があるが、高低差が激しいマップ生成を行わない可能性もある。
+        var h = HeightMap[nextPoint];
+        return 100 <= h; //水は歩行不可
+    }
 }

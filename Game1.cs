@@ -16,7 +16,14 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private WorldMap _worldMap;
     private const int TileSize = 16;
 
-    private Point PlayerPos = new(1,1);
+    private const int MapSizeX = 160;
+    private const int MapSizeY = 160;
+
+    private Point PlayerPos = new(MapSizeX/2, MapSizeY/2);
+
+    private float _moveTimer = 0f;
+    private const float MoveDelay = 0.05f; // 移動間隔（秒）
+
 
 
     public Game1()
@@ -28,7 +35,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     protected override void Initialize()
     {
-        _worldMap = new WorldMap(80,45);
+        _worldMap = new WorldMap(MapSizeX,MapSizeX);
 
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;
@@ -52,13 +59,26 @@ public class Game1 : Microsoft.Xna.Framework.Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        _moveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
         KeyboardState keyboardState = Keyboard.GetState();
 
-        if (keyboardState.IsKeyDown(Keys.W)) PlayerPos += new Point(0,-1);
-        else if (keyboardState.IsKeyDown(Keys.A)) PlayerPos += new Point(-1,0);
-        else if (keyboardState.IsKeyDown(Keys.S)) PlayerPos += new Point(0,1);
-        else if (keyboardState.IsKeyDown(Keys.D)) PlayerPos += new Point(1,0);
+        if (_moveTimer >= MoveDelay)
+        {
+            Point moveDir = Point.Zero;
 
+            if (keyboardState.IsKeyDown(Keys.W)) moveDir = new Point(0, -1);
+            else if (keyboardState.IsKeyDown(Keys.A)) moveDir = new Point(-1, 0);
+            else if (keyboardState.IsKeyDown(Keys.S)) moveDir = new Point(0, 1);
+            else if (keyboardState.IsKeyDown(Keys.D)) moveDir = new Point(1, 0);
+
+            if (moveDir != Point.Zero)
+            {
+                Point nextPos = PlayerPos + moveDir;
+                if (_worldMap.CanMove(nextPos)) PlayerPos = nextPos;
+                _moveTimer = 0f;
+            }
+        }
 
 
         base.Update(gameTime);
@@ -68,7 +88,17 @@ public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        _spriteBatch.Begin();
+        float screenWidth = _graphics.PreferredBackBufferWidth;
+        float screenHeight = _graphics.PreferredBackBufferHeight;
+
+        float playerPixelX = PlayerPos.X * TileSize + TileSize / 2f;
+        float playerPixelY = PlayerPos.Y * TileSize + TileSize / 2f;
+
+        Matrix cameraMatrix = 
+        Matrix.CreateTranslation(-playerPixelX, -playerPixelY, 0f) * 
+        Matrix.CreateTranslation(screenWidth / 2f, screenHeight / 2f, 0f);
+
+        _spriteBatch.Begin(transformMatrix: cameraMatrix);
 
         for (int y = 0; y < _worldMap.Height; y++)
         {
@@ -86,12 +116,12 @@ public class Game1 : Microsoft.Xna.Framework.Game
                     _     => new Color(240, 240, 240)  // 雪山（白）
                 };
 
-                Vector2 position = new Vector2(x * TileSize, y * TileSize);
+                Vector2 position = new(x * TileSize, y * TileSize);
                 _spriteBatch.Draw(_pixel, position, null, tileColor, 0f, Vector2.Zero, TileSize, SpriteEffects.None, 0f);
             }
         }
 
-        _spriteBatch.Draw(_playerTexture,new Vector2(PlayerPos.X * TileSize, PlayerPos.Y * TileSize), Color.White);
+        _spriteBatch.Draw(_playerTexture, new Vector2(PlayerPos.X * TileSize, PlayerPos.Y * TileSize), Color.White);
 
         _spriteBatch.End();
 
