@@ -22,8 +22,9 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private Point PlayerPos = new(MapSizeX/2, MapSizeY/2);
 
     private float _moveTimer = 0f;
-    private const float MoveDelay = 0.05f; // 移動間隔（秒）
+    private const float MoveDelay = 0.1f; // 移動間隔（秒）
 
+    private Camera2D _camera = new(128f, 128f, 0.3f);
 
 
     public Game1()
@@ -40,6 +41,12 @@ public class Game1 : Microsoft.Xna.Framework.Game
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;
         _graphics.ApplyChanges();
+
+        Vector2 initialPlayerPixelPos = new(
+        PlayerPos.X * TileSize + TileSize / 2f, 
+        PlayerPos.Y * TileSize + TileSize / 2f
+        );
+        _camera.SnapTo(initialPlayerPixelPos);
 
         base.Initialize();
     }
@@ -80,6 +87,9 @@ public class Game1 : Microsoft.Xna.Framework.Game
             }
         }
 
+        Vector2 playerPixelPos = new(PlayerPos.X * TileSize + TileSize / 2f, PlayerPos.Y * TileSize + TileSize / 2f);
+        _camera.Update(playerPixelPos);
+
 
         base.Update(gameTime);
     }
@@ -88,17 +98,8 @@ public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        float screenWidth = _graphics.PreferredBackBufferWidth;
-        float screenHeight = _graphics.PreferredBackBufferHeight;
-
-        float playerPixelX = PlayerPos.X * TileSize + TileSize / 2f;
-        float playerPixelY = PlayerPos.Y * TileSize + TileSize / 2f;
-
-        Matrix cameraMatrix = 
-        Matrix.CreateTranslation(-playerPixelX, -playerPixelY, 0f) * 
-        Matrix.CreateTranslation(screenWidth / 2f, screenHeight / 2f, 0f);
-
-        _spriteBatch.Begin(transformMatrix: cameraMatrix);
+        Matrix viewMatrix = _camera.GetViewMatrix(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+        _spriteBatch.Begin(transformMatrix: viewMatrix);
 
         for (int y = 0; y < _worldMap.Height; y++)
         {
