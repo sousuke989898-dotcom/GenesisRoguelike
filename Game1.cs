@@ -14,7 +14,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     private Texture2D _playerTexture;
 
-    private WorldMap _worldMap;
+    private World.WorldMap _worldMap;
     private const int TileSize = 16;
 
     private const int MapSizeX = 160;
@@ -37,7 +37,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     protected override void Initialize()
     {
-        _worldMap = new WorldMap(MapSizeX,MapSizeX);
+        _worldMap = new(MapSizeX,MapSizeX);
 
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;

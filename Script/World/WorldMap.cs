@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Game;
+namespace Game.World;
 
 public class WorldMap
 {
