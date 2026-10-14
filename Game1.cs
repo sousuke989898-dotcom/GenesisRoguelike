@@ -90,7 +90,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
                 Point nextPos = PlayerPos + moveDir;
                 if (_worldMap.CanMove(nextPos))
                 {
-                    _worldMap.RunWater();
+                    // _worldMap.RunWater();
                     PlayerPos = nextPos;
                 }
                 _moveTimer = 0f;

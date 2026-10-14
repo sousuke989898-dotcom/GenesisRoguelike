@@ -30,7 +30,7 @@ public class WorldMap
 
         Random rand = new();
         GenerateHeightMap(rand);
-        GenerateWaterSourceMap(rand);
+        //GenerateWaterSourceMap(rand);
 
     }
 
