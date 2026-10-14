@@ -12,7 +12,12 @@ public class WorldMap
     public MapLayer<byte> HeightMap { get; private set; } //100が基準
     public MapLayer<byte> TemperatureMap { get; private set; }
     public MapLayer<byte> WaterMap { get; private set; }
-    public MapLayer<bool> WaterSourceMap { get; private set; }
+    //public MapLayer<bool> WaterSourceMap { get; private set; } //水源
+
+    public MapLayer<byte> FireLayer { get; }
+    public MapLayer<byte> IceLayer { get; }
+
+    public ElementSimulation ElementSimulation {get; }
 
 
     public WorldMap(int width, int height)
@@ -26,15 +31,21 @@ public class WorldMap
         HeightMap = new(width, height);
         TemperatureMap = new(width, height);
         WaterMap = new(width, height);
-        WaterSourceMap = new(width, height);
+        //WaterSourceMap = new(width, height);
+
+        FireLayer = new(width, height);
+        IceLayer = new(width, height);
+
+        ElementSimulation = new();
 
         Random rand = new();
-        GenerateHeightMap(rand);
+        GenerateBaseMap(rand);
+        ElementSimulation.GenerateElementMap(this,rand);
         //GenerateWaterSourceMap(rand);
 
     }
 
-    private void GenerateHeightMap(Random rand)
+    private void GenerateBaseMap(Random rand)
     {
         FastNoiseLite noise = new(rand.Next());
 
@@ -47,105 +58,18 @@ public class WorldMap
         {
             for (int y = 0; y < Height; y++)
             {
-                float noiseValue = (noise.GetNoise(x, y) + 1f) / 2f; //ノイズ値を取得
-                byte height = (byte)(noiseValue * 255);
+                byte height = (byte)((noise.GetNoise(x, y) + 1f) / 2f * 255);
                 HeightMap[x, y] = height;
-
                 TemperatureMap[x, y] = (byte)(255 - (height / 2));
 
                 if (height < 100)
                 {
-                    WaterMap[x,y] = (byte)(100 - height);
+                    WaterMap[x,y] = (byte)(100 - height); //海
                 }
             }
         }
     }
 
-    private void GenerateWaterSourceMap(Random rand)
-    {
-        FastNoiseLite sourceNoise = new(rand.Next());
-        sourceNoise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
-        sourceNoise.SetFrequency(0.1f);
-
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                byte height = HeightMap[x, y];
-                if (150 <= height && height < 200)
-                {
-                    float srcVal = sourceNoise.GetNoise(x, y);
-                    WaterSourceMap[x,y] = srcVal < -0.99f;
-                }
-            }
-        }
-    }
-
-    public void RunWater() //水を流す
-    {
-        Span<Point> directions =
-        [
-            new Point(0, -1), // 上
-            new Point(0, 1),  // 下
-            new Point(-1, 0), // 左
-            new Point(1, 0)   // 右
-        ];
-
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                byte cHeight = HeightMap[x,y];
-                if (cHeight < 100) continue; //海
-                if (WaterSourceMap[x,y]) WaterMap[x,y] += 2;
-
-                byte cWater  = WaterMap[x,y];
-                if (cWater == 0) continue; //水がない
-
-
-                int cWaterLevel = cHeight + cWater; //水位
-                int minWaterLevel = cWaterLevel;
-
-                int bestX = x;
-                int bestY = y;
-
-                foreach (Point dir in directions)
-                {
-                    int nx = x + dir.X;
-                    int ny = y + dir.Y;
-                    if (!HeightMap.IsInBounds(nx, ny)) continue;
-
-                    byte nWater = WaterMap[nx,ny];
-                    byte nHeifht = HeightMap[nx,ny];
-                    if (nHeifht < 100)
-                    {
-                        bestX = nx;
-                        bestY = ny;
-                        break;
-                    }
-                    int nWaterLevel = nHeifht + nWater;
-
-                    if (nWaterLevel < minWaterLevel)
-                    {
-                        minWaterLevel = nWaterLevel;
-                        bestX = nx;
-                        bestY = ny;
-                    }
-                }
-
-                if (bestX != x || bestY != y)
-                {
-                    WaterMap[x, y]--;
-                    
-                    if (HeightMap[bestX, bestY] >= 100) //海は除外
-                    {
-                        WaterMap[bestX, bestY]++;
-                    }
-                }
-            }
-        }
-
-    }
 
     public bool CanMove(Point nextPos)
     {
