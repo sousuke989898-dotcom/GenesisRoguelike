@@ -17,6 +17,8 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     private WorldMap _worldMap;
     private WorldRenderer _worldRenderer;
+
+    private WaterSimulation _waterSimulation = new();
     private const int TileSize = 16;
 
     private const int MapSizeX = 1000;
@@ -25,7 +27,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private Point PlayerPos = new(MapSizeX/2, MapSizeY/2);
 
     private float _moveTimer = 0f;
-    private const float MoveDelay = 0.1f; // 移動間隔（秒）
+    private const float MoveDelay = 0.01f; // 移動間隔（秒）
 
     private Camera2D _camera = new(128f, 128f, 0.3f);
 
@@ -93,7 +95,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
                 Point nextPos = PlayerPos + moveDir;
                 if (_worldMap.CanMove(nextPos))
                 {
-                    // _worldMap.RunWater();
+                    // _waterSimulation.RunWater(_worldMap);
                     PlayerPos = nextPos;
                 }
                 _moveTimer = 0f;
